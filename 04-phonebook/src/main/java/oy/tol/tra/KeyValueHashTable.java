@@ -1,5 +1,8 @@
 package oy.tol.tra;
 
+import java.net.HttpURLConnection;
+import java.net.IDN;
+
 public class KeyValueHashTable<K extends Comparable<K>, V> implements Dictionary<K, V> {
 
     // This should implement a hash table.
@@ -22,7 +25,7 @@ public class KeyValueHashTable<K extends Comparable<K>, V> implements Dictionary
 
     @Override
     public Type getType() {
-        return Type.NONE;
+        return Type.HASHTABLE;
     }
 
     @SuppressWarnings("unchecked")
@@ -42,7 +45,7 @@ public class KeyValueHashTable<K extends Comparable<K>, V> implements Dictionary
     @Override
     public int size() {
         // TODO: Implement this.
-        return 0;
+        return count;
     }
 
     /**
@@ -72,7 +75,7 @@ public class KeyValueHashTable<K extends Comparable<K>, V> implements Dictionary
     public boolean add(K key, V value) throws IllegalArgumentException, OutOfMemoryError {
         // TODO: Implement this.
         // Remeber to check for null values.
-
+        if (null == key || value == null) throw new IllegalArgumentException("Person or phone number cannot be null");
         // Checks if the LOAD_FACTOR has been exceeded --> if so, reallocates to a bigger hashtable.
         if (((double)count * (1.0 + LOAD_FACTOR)) >= values.length) {
             reallocate((int)((double)(values.length) * (1.0 / LOAD_FACTOR)));
@@ -82,17 +85,30 @@ public class KeyValueHashTable<K extends Comparable<K>, V> implements Dictionary
         // if index was taken by different Person (collision), get new hash and index,
         // insert into table when the index has a null in it,
         // return true if existing Person updated or new Person inserted.
-        
-        return false;
+        int hashCode = key.hashCode();
+        int index = calculateIndexByHC(hashCode,key);
+        if(index == -1){
+            return false;
+        }
+        if (values[index]==null){
+            count++;
+        }
+        values[index] = new Pair<>(key, value);
+
+        return true;
     }
 
     @Override
     public V find(K key) throws IllegalArgumentException {
         // Remember to check for null.
-
+        if (null==key) throw new IllegalArgumentException("Person to find cannot be null");
         // Must use same method for computing index as add method
-        
-        return null;
+        int hashCode = key.hashCode();
+        int index = getIndexByHC(hashCode,key);
+        if (index == -1){
+            return null;
+        }
+        return values[index].getValue();
     }
 
     @Override
@@ -133,6 +149,32 @@ public class KeyValueHashTable<K extends Comparable<K>, V> implements Dictionary
 		    if (newCapacity < values.length) {
 			      reallocate(newCapacity);
 		    } 
+    }
+
+    private int calculateIndexByHC(int hashCode,K key){
+        int index = Math.abs(hashCode) % values.length;
+
+        int start = index;
+        while (values[index] != null && !values[index].getKey().equals(key)) {
+            index = (index + 1) % values.length;
+            if (index == start) {
+                return -1;
+            }
+        }
+        return index;
+    }
+
+    private int getIndexByHC(int hashCode,K key){
+        int index = Math.abs(hashCode) % values.length;
+
+        int start = index;
+        while (values[index] == null || !values[index].getKey().equals(key)) {
+            index = (index + 1) % values.length;
+            if (index == start) {
+                return -1;
+            }
+        }
+        return index;
     }
  
 }
