@@ -4,7 +4,7 @@ package oy.tol.tra;
  * An interface to stack class holding elements of type E.
  * TODO: Implement this interface in a separate <code>StackImplementation.java</code> file.
  *       No implementation in this file!!
- * 
+ *
  */
 public interface StackInterface<E> {
 
@@ -13,7 +13,7 @@ public interface StackInterface<E> {
     @return The number of elements the stack can currently hold.
     */
    public int capacity();
-   
+
    /**
     * Push an element to the stack.
     * <p>
@@ -51,7 +51,7 @@ public interface StackInterface<E> {
     *  Use to check if the stack is empty.
     * @return Returns true if the stack is empty, false otherwise.
     */
-    public boolean isEmpty();
+   public boolean isEmpty();
 
    /**
     * Clears the stack so that it does not contain any elements.
