@@ -83,7 +83,7 @@ public class LinkedListImplementation<E> implements LinkedListInterface<E> {
          return false;
       }
       boolean result = false;
-      // First check if the head is the one, easier this way.
+
       if (head.element.equals(element)) {
          Node<E> oldHead = head;
          head = oldHead.next;

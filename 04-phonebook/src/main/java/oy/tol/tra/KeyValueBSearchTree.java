@@ -1,15 +1,12 @@
 package oy.tol.tra;
 
-import java.net.HttpURLConnection;
-
 public class KeyValueBSearchTree<K extends Comparable<K>, V> implements Dictionary<K, V> {
 
-    // This is the BST implementation, KeyValueHashTable has the hash table
-    // implementation
 
-    private TreeNode<K, V> root;
-    private int count = 0;
-    private int maxTreeDepth = 0;
+
+    private TreeNode<K, V> rootNode;
+    private int elementCount = 0;
+    private int maxDepth = 0;
 
     @Override
     public Type getType() {
@@ -18,9 +15,9 @@ public class KeyValueBSearchTree<K extends Comparable<K>, V> implements Dictiona
 
     @Override
     public int size() {
-        // TODO: Implement this
-        return count;
+        return elementCount;
     }
+
 
     /**
      * Prints out the statistics of the tree structure usage.
@@ -38,66 +35,78 @@ public class KeyValueBSearchTree<K extends Comparable<K>, V> implements Dictiona
      */
     @Override
     public String getStatus() {
-        String toReturn = "Tree has max depth of " + maxTreeDepth + ".\n";
-        toReturn += "Longest collision chain in a tree node is " + TreeNode.longestCollisionChain + "\n";
+        String statusMessage = "Tree has max depth of " + maxDepth + ".\n";
+        statusMessage += "Longest collision chain in a tree node is " + TreeNode.longestCollisionChain + "\n";
         TreeAnalyzerVisitor<K, V> visitor = new TreeAnalyzerVisitor<>();
-        root.accept(visitor);
-        toReturn += "Min path height to bottom: " + visitor.minHeight + "\n";
-        toReturn += "Max path height to bottom: " + visitor.maxHeight + "\n";
-        toReturn += "Ideal height if balanced: " + Math.ceil(Math.log(count)) + "\n";
-        return toReturn;
+        rootNode.accept(visitor);
+        statusMessage += "Min path height to bottom: " + visitor.minHeight + "\n";
+        statusMessage += "Max path height to bottom: " + visitor.maxHeight + "\n";
+        statusMessage += "Ideal height if balanced: " + Math.ceil(Math.log(elementCount)) + "\n";
+        return statusMessage;
     }
 
     @Override
     public boolean add(K key, V value) throws IllegalArgumentException, OutOfMemoryError {
-        // TODO: Implement this
-        // Remember null check.
-        // If root is null, should go there.
-        if (null==key || value==null) throw new IllegalArgumentException("Person or phone number cannot be null");
-        if (root == null){
-            root = new TreeNode<>(key,value);
-            count++;
-            return true;
+        if (key == null || value == null) {
+            throw new IllegalArgumentException("Neither key nor value can be null.");
         }
-        int added = root.insert(key,value,key.hashCode());
-        if (TreeNode.currentAddTreeDepth>maxTreeDepth){
-            maxTreeDepth = TreeNode.currentAddTreeDepth;
-        }
-        // update the root node. But it may have children
-            // so do not just replace it with this new node but set
-            // the keys and values for the already existing root.
-        TreeNode.currentAddTreeDepth = 0;
-        if (added == 1){
-            count++;
+        if (rootNode == null) {
+            rootNode = new TreeNode<>(key, value);
+            elementCount++;
+            maxDepth = 1;
             return true;
-        }else return false;
+        } else {
+//            int depthBefore = TreeNode.currentAddTreeDepth;
+            int added = rootNode.insert(key, value, key.hashCode());
+            int depthAfter = TreeNode.currentAddTreeDepth;
+            TreeNode.currentAddTreeDepth = 0;
+            if (added > 0) {
+                elementCount++;
+            }
+            if (depthAfter > maxDepth) {
+                maxDepth = depthAfter;
+            }
+            return added > 0;
+        }
     }
 
     @Override
     public V find(K key) throws IllegalArgumentException {
-        // TODO: Implement this. //Think about this
-        if (null == key) throw new IllegalArgumentException("Person to find cannot be null");
-        return (root.find(key,key.hashCode()));
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null.");
+        }
+        return (rootNode != null) ? rootNode.find(key, key.hashCode()) : null;
     }
 
     @Override
     public void ensureCapacity(int size) throws OutOfMemoryError {
-        // Nothing to do here. Trees need no capacity.
+
     }
 
     @Override
     public Pair<K, V>[] toSortedArray() {
-        TreeToArrayVisitor<K, V> visitor = new TreeToArrayVisitor<>(count);
-        root.accept(visitor);
-        Pair<K, V>[] sorted = visitor.getArray();
-        Algorithms.fastSort(sorted);
-        return sorted;
+        TreeToArrayVisitor<K, V> visitor = new TreeToArrayVisitor<>(elementCount);
+        rootNode.accept(visitor);
+        Pair<K, V>[] sortedArray = visitor.getArray();
+        Algorithms.fastSort(sortedArray);
+        return sortedArray;
     }
 
     @Override
     public void compress() throws OutOfMemoryError {
-        // Nothing to do here, since BST does not use extra space like array based
-        // structures.
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

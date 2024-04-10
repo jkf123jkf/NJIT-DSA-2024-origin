@@ -11,9 +11,11 @@ public class Pair<K extends Comparable<K>, V> implements Comparable<Pair<K, V>> 
    private K key;
    private V value;
 
-   public Pair(K key, V value) {
-      this.key = key;
-      this.value = value;
+
+
+   public Pair(Object key, Object value) {
+      this.key = (K) key;
+      this.value = (V) value;
    }
 
    public K getKey() {
@@ -60,3 +62,5 @@ public class Pair<K extends Comparable<K>, V> implements Comparable<Pair<K, V>> 
    }
 
 }
+
+
